@@ -1,0 +1,939 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Critical appraisal</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+:root{
+  --ground:#FEFAF0; --surface:#FFFFFF; --sunk:#F9F4E8; --ink:#111718; --muted:#56615F; --faint:#8A9493;
+  --line:#ECE3CE; --accent:#0B454B; --accent-ink:#FFFFFF; --accent-soft:#E3EEEF; --accent-edge:#0B454B; --accent-text:#7CC3CA; --focus:#7CC3CA; --burnt:#E4841D;
+  --low:#1F7A4A; --low-bg:#E3F2E9; --some:#9A6B00; --some-bg:#FBF0D3; --high:#B3362F; --high-bg:#F8E3E1;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --serif:"Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --sans:"Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --mono:"Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+@media (max-width:520px){.wrap{padding-inline:16px}}
+h1,h2,h3{font-family:var(--serif);font-weight:600;text-wrap:balance;margin:0;letter-spacing:-.01em}
+h2{font-size:1.45rem;line-height:1.2}
+h3{font-size:1.12rem;line-height:1.3}
+p{margin:0}
+.eyebrow{font:500 .72rem/1.2 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.mono,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+
+/* Header */
+header.trial{display:grid;gap:10px;padding-block:6px 20px}
+.acronym{font-family:var(--serif);font-size:clamp(2.2rem,6vw,3.3rem);line-height:1;font-weight:600;letter-spacing:-.02em}
+.ttl{font-family:var(--serif);font-size:1.2rem;line-height:1.35;color:var(--ink);max-width:62ch}
+.cite{color:var(--muted);font-size:.9rem;max-width:75ch}
+.pico{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:8px}
+.pico div{background:var(--surface);padding:10px 12px;display:grid;gap:2px}
+.pico b{font:600 .7rem/1.2 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--accent-text)}
+.pico span{font-size:.9rem}
+.banner{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:10px;background:var(--accent-soft);font-size:.88rem}
+.banner .dot{width:8px;height:8px;border-radius:50%;background:var(--accent-text);margin-top:7px;flex:none}
+
+/* Data-source switch + tabs */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);padding-block:10px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs button{border:0;background:none;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:500;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.tabs button:hover{color:var(--ink)}
+.seg{display:inline-flex;background:var(--sunk);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:999px;padding:5px 12px;font-size:.84rem;cursor:pointer;color:var(--muted);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .12)}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.srcwrap{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted)}
+
+section.panel{display:grid;gap:22px;padding-top:24px}
+.lede{color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.stack{display:grid;gap:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.88rem;font-weight:500}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent-edge)}
+.btn.primary:hover{filter:brightness(1.15)}
+.btn.ghost{background:none}
+
+/* Trial details */
+.fields{display:grid;gap:22px}
+fieldset{border:0;padding:0;margin:0;display:grid;gap:10px}
+legend{padding:0;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px}
+.grid.wide{grid-template-columns:1fr}
+.f{display:grid;gap:4px;align-content:start}
+.f label{font-size:.8rem;color:var(--muted);font-weight:500}
+.f input,.f select,.f textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px}
+.f input.num{font-family:var(--mono)}
+.f .val{padding:8px 0 4px;border-bottom:1px dashed var(--line);min-height:2.2em}
+.f .loc{font-size:.74rem;color:var(--faint)}
+.f .check{font-size:.76rem;font-family:var(--mono)}
+.f .check.ok{color:var(--low)} .f .check.bad{color:var(--high)}
+.f input.bad{border-color:var(--high);box-shadow:0 0 0 1px var(--high)}
+
+/* Numbers */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tile{background:var(--surface);padding:14px 16px;display:grid;gap:4px;align-content:start}
+.tile .k{font-size:.76rem;color:var(--muted);font-weight:500}
+.tile .v{font:500 1.35rem/1.15 var(--mono);font-variant-numeric:tabular-nums}
+.tile .s{font:400 .78rem/1.3 var(--mono);color:var(--muted)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.callout{border-left:3px solid var(--accent-text);padding:4px 0 4px 14px;max-width:70ch}
+.flag{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:2px 8px;border-radius:999px}
+.flag.warn{background:var(--some-bg);color:var(--some)} .flag.okay{background:var(--low-bg);color:var(--low)}
+.assump{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.chartbox{position:relative;overflow-x:auto}
+.chartbox svg{display:block;width:100%;min-width:480px;height:auto}
+.chart-text{fill:var(--muted);font:11px var(--sans)}
+.chart-label{font:600 11px var(--sans);fill:var(--ink)}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.78rem;box-shadow:0 4px 14px rgb(0 0 0 / .12);min-width:170px}
+.tip .r{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono)}
+.sw{display:inline-block;width:14px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--muted);font-size:.78rem}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+th.n{text-align:right}
+.scroll{overflow-x:auto}
+
+/* Risk of bias */
+.robsum{display:flex;flex-wrap:wrap;gap:8px}
+.robsum .cell{display:grid;justify-items:center;gap:4px;font-size:.72rem;color:var(--muted);min-width:54px}
+.pip{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 .8rem var(--sans);border:1.5px dashed var(--line);color:var(--faint);background:var(--surface)}
+.pip.low{background:var(--low);border:0;color:#fff} .pip.some{background:var(--some);border:0;color:#fff} .pip.high{background:var(--high);border:0;color:#fff}
+.dom{display:grid;gap:12px}
+.dom header{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.dom .q{font-size:.86rem;color:var(--muted);max-width:72ch}
+.picks{display:flex;flex-wrap:wrap;gap:6px}
+.pick{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px 5px 9px;cursor:pointer;font-size:.84rem;display:inline-flex;gap:7px;align-items:center}
+.pick i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.pick[data-j="low"] i{background:var(--low)} .pick[data-j="some"] i{background:var(--some)} .pick[data-j="high"] i{background:var(--high)}
+.pick[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink);font-weight:600}
+.tally{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:.8rem;color:var(--muted)}
+.tally .t{display:inline-flex;align-items:center;gap:4px}
+.tally button{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--surface);cursor:pointer;line-height:1}
+.tally .c{font-family:var(--mono);min-width:2ch;text-align:center;color:var(--ink)}
+.reveal{border-top:1px dashed var(--line);padding-top:12px;display:grid;gap:10px}
+.verdict{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.84rem;padding:3px 10px;border-radius:999px}
+.verdict.low{background:var(--low-bg);color:var(--low)} .verdict.some{background:var(--some-bg);color:var(--some)} .verdict.high{background:var(--high-bg);color:var(--high)}
+.verdict.changed{background:var(--some-bg);color:var(--some)} .verdict.match{background:var(--low-bg);color:var(--low)} .verdict.unclear{background:var(--sunk);color:var(--muted)}
+blockquote{margin:0;padding:8px 12px;background:var(--sunk);border-radius:8px;font-family:var(--serif);font-size:1rem;line-height:1.45}
+blockquote cite{display:block;font:400 .74rem var(--sans);color:var(--muted);font-style:normal;margin-top:4px}
+.agree{font-size:.82rem;color:var(--muted)}
+ul.clean{margin:0;padding-left:1.1em;display:grid;gap:8px;max-width:72ch}
+.checks{display:grid;gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;font-size:.92rem}
+.checks input[type=checkbox]{margin-top:4px;accent-color:var(--accent-text)}
+textarea{resize:vertical;min-height:4.5em}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+footer.foot{margin-top:40px;color:var(--faint);font-size:.78rem;text-align:center}
+@media (prefers-reduced-motion:no-preference){.reveal{animation:fade .25s ease-out}@keyframes fade{from{opacity:.4;transform:translateY(-3px)}to{opacity:1;transform:none}}}
+
+/* v2 additions */
+.library{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.library .row{gap:8px}
+.library select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;max-width:min(60vw,340px)}
+.library label{font-size:.8rem;color:var(--muted)}
+.pico-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:14px}
+.pico-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:10px;align-content:start}
+.pico-card .head{display:flex;gap:14px;align-items:center}
+.pico-card .letter{flex:none;font-family:var(--serif);font-size:2.6rem;line-height:.9;font-weight:700;color:var(--burnt);min-width:1.1ch}
+.pico-card .name{font-weight:600}
+.pico-card .def{font-size:.82rem;color:var(--muted)}
+.pico-card ul{margin:0;padding-left:1.1em;font-size:.84rem;color:var(--muted);display:grid;gap:3px}
+.pico-card textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;min-height:5em;resize:vertical}
+.question{background:var(--accent-soft);border-radius:12px;padding:16px 18px;display:grid;gap:6px}
+.question p{font-family:var(--serif);font-size:1.18rem;line-height:1.45;max-width:70ch}
+.question .gap{color:var(--muted);font-style:italic}
+.cl-prog{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:.84rem;color:var(--muted)}
+.cl-bar{flex:1 1 200px;height:6px;border-radius:999px;background:var(--sunk);overflow:hidden;min-width:140px}
+.cl-bar i{display:block;height:100%;background:var(--accent-text);border-radius:999px}
+.cl-sec{display:grid;gap:12px}
+.cl-sec h2 .n{font:500 .8rem var(--sans);color:var(--muted);margin-left:8px;letter-spacing:0}
+.cl-item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:10px}
+.cl-item .qrow{display:flex;gap:12px;align-items:baseline}
+.cl-item .qn{font:500 .8rem var(--mono);color:var(--faint);min-width:2ch}
+.cl-item .qt{font-weight:600;font-size:1rem;line-height:1.4}
+.cl-item .hint{font-size:.84rem;color:var(--muted);max-width:74ch}
+.cl-item textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;min-height:3.2em;resize:vertical}
+.ans{display:flex;flex-wrap:wrap;gap:6px}
+.ans button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.84rem}
+.ans button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:600}
+.helper{background:#EEF1F2;border-radius:8px;padding:8px 12px;font-size:.84rem}
+.helper > span{display:block}
+.helper > span + span{margin-top:3px}
+.helper b{font-weight:600}
+.helper .mono{font-size:.82rem}
+.helper a{color:var(--accent-text);cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-weight:500}
+.dom textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;min-height:3.5em;resize:vertical}
+.name-input{display:block;width:100%;border:0;border-bottom:1px dashed transparent;background:transparent;padding:0 0 4px;margin:0;color:var(--ink);border-radius:0}
+.name-input::placeholder{color:var(--faint)}
+.name-input:hover{border-bottom-color:var(--line)}
+.name-input:focus{outline:none;border-bottom-color:var(--accent-text)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.fields .f{align-content:end}
+.flag.bad{background:var(--high-bg);color:var(--high)}
+</style>
+
+<div class="wrap">
+  <div class="library">
+    <div class="row">
+      <label for="trial-pick">Trial</label>
+      <select id="trial-pick"></select>
+      <button class="btn" id="trial-new">New trial</button>
+    </div>
+    <button class="btn ghost" id="trial-del">Delete this trial</button>
+  </div>
+  <header class="trial" id="hdr"></header>
+  <div class="bar">
+    <nav class="tabs" role="tablist" aria-label="Appraisal sections">
+      <button role="tab" id="tab-pico" data-tab="pico">PICO</button>
+      <button role="tab" id="tab-check" data-tab="check">Checklist</button>
+      <button role="tab" id="tab-results" data-tab="results">Results &amp; precision</button>
+      <button role="tab" id="tab-discuss" data-tab="discuss">Discussion</button>
+    </nav>
+  </div>
+  <main id="main"></main>
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<script>
+/* Trial statistics — pure functions, no DOM. */
+const Stats = (() => {
+  const Z = 1.959963984540054;
+  function erf(x) {
+    // W. J. Cody-style rational approx via high-precision series/continued fraction
+    const s = Math.sign(x); x = Math.abs(x);
+    if (x < 3) { // Taylor series
+      let sum = x, term = x, n = 0;
+      while (Math.abs(term) > 1e-17 * Math.abs(sum)) { n++; term *= -x * x / n; sum += term / (2 * n + 1); if (n > 200) break; }
+      return s * 2 / Math.sqrt(Math.PI) * sum;
+    }
+    // continued fraction for erfc
+    let f = 0; for (let k = 60; k >= 1; k--) f = (k / 2) / (x + f);
+    const erfc = Math.exp(-x * x) / Math.sqrt(Math.PI) / (x + f);
+    return s * (1 - erfc);
+  }
+  const Phi = x => 0.5 * (1 + erf(x / Math.SQRT2));
+  const phi = x => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+
+  function lgamma(z) { // Lanczos
+    const g = 7, c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
+      -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1; let x = c[0]; for (let i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    const t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  const lchoose = (n, k) => lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1);
+
+  // Two-sided Fisher exact test for [[a, n1-a],[c, n2-c]]
+  function fisher(a, n1, c, n2) {
+    const m = a + c, N = n1 + n2;
+    const lo = Math.max(0, m - n2), hi = Math.min(n1, m);
+    const lden = lchoose(N, m);
+    const lp = x => lchoose(n1, x) + lchoose(n2, m - x) - lden;
+    const pobs = lp(a);
+    let p = 0;
+    for (let x = lo; x <= hi; x++) { const v = lp(x); if (v <= pobs + 1e-7) p += Math.exp(v); }
+    return Math.min(1, p);
+  }
+
+  function binary(a, n1, c, n2) { // arm 1 = intervention, arm 2 = control
+    const r1 = a / n1, r2 = c / n2;
+    const rr = r1 / r2;
+    const seLogRR = Math.sqrt(1 / a - 1 / n1 + 1 / c - 1 / n2);
+    const arr = r2 - r1; // positive = benefit
+    const seArr = Math.sqrt(r1 * (1 - r1) / n1 + r2 * (1 - r2) / n2);
+    const arrLo = arr - Z * seArr, arrHi = arr + Z * seArr;
+    return {
+      r1, r2, rr, rrLo: Math.exp(Math.log(rr) - Z * seLogRR), rrHi: Math.exp(Math.log(rr) + Z * seLogRR),
+      arr, arrLo, arrHi, nnt: 1 / arr, p: fisher(a, n1, c, n2)
+    };
+  }
+
+  // Fragility index (Walsh 2014). Significant → events added to the arm with fewer events until p ≥ .05.
+  // Non-significant → reverse fragility: events added to the arm with more events until p < .05.
+  function fragility(a, n1, c, n2, alpha = 0.05) {
+    const p0 = fisher(a, n1, c, n2);
+    const sig = p0 < alpha;
+    let x = a, y = c, k = 0;
+    const fewerIsA = a / n1 <= c / n2;
+    const bumpA = sig ? fewerIsA : !fewerIsA;
+    while (k < 100000) {
+      if (bumpA) { if (x >= n1) return null; x++; } else { if (y >= n2) return null; y++; }
+      k++;
+      const p = fisher(x, n1, y, n2);
+      if (sig ? p >= alpha : p < alpha) return { index: k, reverse: !sig, arm: bumpA ? 1 : 2, p };
+    }
+    return null;
+  }
+
+  // SE of log ratio from a 95% CI
+  const seFromCI = (lo, hi) => (Math.log(hi) - Math.log(lo)) / (2 * Z);
+
+  // Gelman & Carlin (2014) retrodesign, closed form. D = assumed true effect (log scale), s = SE.
+  function retrodesign(D, s, alpha = 0.05) {
+    const z = alpha === 0.05 ? Z : -qnorm(alpha / 2);
+    const mu = Math.abs(D), lam = mu / s;
+    const a = z - lam, b = -z - lam;
+    const power = (1 - Phi(a)) + Phi(b);
+    const typeS = Phi(b) / power;
+    const eAbsSig = mu * (1 - Phi(a)) + s * phi(a) - mu * Phi(b) + s * phi(b);
+    const meanAbsSig = eAbsSig / power;
+    return { power, typeS, exaggeration: meanAbsSig / mu, meanAbsSig };
+  }
+  function qnorm(p) { // bisection is plenty here
+    let lo = -10, hi = 10; for (let i = 0; i < 100; i++) { const m = (lo + hi) / 2; if (Phi(m) < p) lo = m; else hi = m; } return (lo + hi) / 2;
+  }
+
+  return { Z, Phi, phi, fisher, binary, fragility, seFromCI, retrodesign, qnorm };
+})();
+if (typeof module !== 'undefined') module.exports = Stats;
+
+</script>
+<script>
+(() => {
+const KEY = 'rct-appraisal-room:v2';
+
+const EX_VERSION = 14;
+const EXAMPLE = {
+  example: true, exV: EX_VERSION,
+  notes: {bl: '- A mortality benefit was shown with MCS in selected STEMI patients with depressed LV function and cardiogenic shock in expert centers and it will change my practice towards earlier MCS in these patients.\n- It is unlikely that this effect does not exist, but it might be slightly overestimated, and given the real risk for major bleeding and limb ischemia associated with MCS placement, it would not change my immediate practice for all cardiogenic shock patients (HF, RV failure, NSTEMI), before additional data appear.'},
+  cl: {
+    random: {a:'yes', note:'Randomised 1:1 immediately after the shock diagnosis, in a prospective multicentre design. There was allocation concealment but no blinding.'},
+    blind: {a:'no', note:'Open-label; blinding is not feasible for an implanted circulatory support device. All-cause death is objective and resistant to ascertainment bias, but decisions about escalating support or withdrawing care could still be influenced by knowing the assignment.'},
+    same: {a:'yes', note:'Both arms received guideline-directed therapy, with the device added before PCI. The haemodynamic substudy showed target mean arterial pressure was reached with actually fewer vasopressors/inotropes in the Impella group. Therefore, this is unlikely to confer bias towards rejecting the null hypothesis.'},
+    baseline: {a:'yes'},
+    ltfu: {a:'no'},
+    itt: {a:'yes', note:'Intention-to-treat, all randomised consented patients: 355 analysed (179 device, 176 control) against a planned 360.'},
+    selective: {a:'yes'},
+    stats: {note:'All-cause mortality at 180 days by unadjusted Cox proportional-hazards regression, reported as a hazard ratio with 95% CI in the ITT population.'},
+    size: {note:'45.8% (82/179) with the pump vs 58.5% (103/176) with standard care: an absolute reduction of about 12–13 percentage points, NNT about 8. Hazard ratio 0.74.'},
+    precision: {note:'95% CI 0.55 to 0.99, P = 0.04 — significant, but only just, with the upper bound close to 1. The fragility index is 4: four more deaths in the device arm (or four fewer in the control arm) would undo significance.'},
+    apply: {a:'unclear', note:'Generalisability is the main limitation. Enrolment ran about 10 years, over 1,200 STEMI-shock patients were screened and 355 randomised, and comatose survivors of out-of-hospital cardiac arrest were excluded. In a real-world registry only about a third of STEMI-CS patients met the criteria, and those who did had higher 180-day mortality (71.8% vs 52.1%) and more prior resuscitation than trial participants. The results fit non-arrest STEMI shock managed at centres experienced with the device; they do not extend to non-STEMI shock, right-ventricular or biventricular failure, or post-arrest coma.'},
+    outcomes: {a:'yes', note:'Mortality (primary), a composite of escalation of support, transplantation or death, days alive out of hospital, and a pre-specified safety composite (major bleeding, vascular complications, device malfunction, aortic valve damage, significant haemolysis). The device nearly doubled renal-replacement therapy (subdistribution hazard 1.67, 95% CI 1.18–2.35), though the survival benefit held regardless of AKI or RRT status (interaction P = 0.84) and all survivors were free of RRT at 180 days. No quality-of-life or functional outcome was reported.'},
+    worth: {a:'unclear', note:'The survival gain (NNT about 8) is clinically meaningful but statistically fragile, and it buys a markedly higher burden of AKI and renal-replacement therapy, bleeding and vascular or limb complications, plus the device and ICU resources those imply. For a carefully selected non-arrest STEMI-CS patient at an experienced centre the trade-off may favour the device; outside that narrow population the harms may dominate. Health-economic substudies were planned separately and would settle the cost side.'}
+  },
+  data: {
+    acronym:'DanGer Shock',
+    population:'Adults with STEMI complicated by cardiogenic shock (SBP <100 mmHg or vasopressors, LVEF <45%, lactate >2.5 mmol/L); comatose survivors of out-of-hospital cardiac arrest excluded',
+    intervention:'Impella CP transvalvular microaxial flow pump, placed before PCI, plus standard guideline-directed care',
+    comparator:'Standard guideline-directed care alone',
+    outcome:'Death from any cause at 180 days',
+    followup:'180 days',
+    arm1Label:'Microaxial flow pump', n1:'179', e1:'82', arm2Label:'Standard care', n2:'176', e2:'103',
+    measure:'HR', est:'0.74', lo:'0.55', hi:'0.99', pReported:'0.04'
+  }
+};
+
+const PICO = [
+  {k:'population', L:'P', name:'Patient, Population, or Problem', def:'Who was studied, and with what condition?',
+   ask:['Key inclusion and exclusion criteria','Setting (inpatient, outpatient, countries)','Run-in or enrichment that shaped who was randomised'],
+   ph:'e.g. Adults ≥50 y with symptomatic HF and LVEF ≥50%'},
+  {k:'intervention', L:'I', name:'Intervention', def:'What was given, and how?',
+   ask:['Drug, dose and timing, or the procedure/device','Co-interventions everyone received','Adherence or crossover worth noting'],
+   ph:'e.g. Veltrazan 10 mg once daily'},
+  {k:'comparator', L:'C', name:'Comparison or Control', def:'What was the intervention tested against?',
+   ask:['Placebo, sham, active drug or usual care','Was the comparator given at an adequate dose?','Would your patients get this comparator today?'],
+   ph:'e.g. Matching placebo'},
+  {k:'outcome', L:'O', name:'Outcome', def:'What was measured, and over what time?',
+   ask:['Primary outcome exactly as defined','Composite? Which component drove it?','Patient-important or surrogate?'],
+   ph:'e.g. CV death or first HF hospitalisation at 26 months'}
+];
+
+const DATA_FIELDS = [
+  {g:'Primary outcome', k:'arm1Label', label:'Intervention arm'},
+  {g:'Primary outcome', k:'n1', label:'Randomised (intervention)', num:true},
+  {g:'Primary outcome', k:'e1', label:'Events (intervention)', num:true},
+  {g:'Primary outcome', k:'arm2Label', label:'Control arm'},
+  {g:'Primary outcome', k:'n2', label:'Randomised (control)', num:true},
+  {g:'Primary outcome', k:'e2', label:'Events (control)', num:true},
+  {g:'Primary outcome', k:'ltfu', label:'Lost to follow-up (total)', num:true},
+  {g:'Primary outcome', k:'followup', label:'Follow-up'},
+  {g:'Primary analysis', k:'measure', label:'Effect measure', sel:['HR','RR','OR']},
+  {g:'Primary analysis', k:'est', label:'Point estimate', num:true},
+  {g:'Primary analysis', k:'lo', label:'95% CI lower', num:true},
+  {g:'Primary analysis', k:'hi', label:'95% CI upper', num:true},
+  {g:'Primary analysis', k:'pReported', label:'Reported P value'},
+  {g:'Per-protocol analysis', k:'ppEst', label:'Point estimate', num:true, ph:'same scale as above'},
+  {g:'Per-protocol analysis', k:'ppLo', label:'95% CI lower', num:true},
+  {g:'Per-protocol analysis', k:'ppHi', label:'95% CI upper', num:true},
+  {g:'Sample size calculation (from the Methods)', only:'sup', k:'controlRisk', label:'Expected control event rate (%)', num:true, ph:'e.g. 15'},
+  {g:'Sample size calculation (from the Methods)', only:'sup', k:'rrr', label:'Expected relative risk reduction (%)', num:true, ph:'e.g. 20'},
+  {g:'Sample size calculation (from the Methods)', only:'sup', k:'power', label:'Planned power (%)', num:true, ph:'e.g. 90'},
+  {g:'Non-inferiority margin (from the Methods)', only:'ni', k:'niScale', label:'Margin expressed as', sel:['Ratio (HR/RR/OR)','Risk difference (percentage points)']},
+  {g:'Non-inferiority margin (from the Methods)', only:'ni', k:'niMargin', label:'Margin', num:true, ph:'e.g. 1.3, or 4 points'}
+];
+
+
+
+/* ---------- state: a small library of trials kept in this browser ---------- */
+const blankTrial = () => ({data:{}, cl:{}, notes:{}, assump:{}});
+const newId = () => 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
+let saveT;
+function save(){ clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }, 250); }
+const flush = () => { clearTimeout(saveT); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} };
+addEventListener('pagehide', flush);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+let S = load();
+if (!S || !S.trials || !Object.keys(S.trials).length){
+  const id = 'example';
+  S = {tab:'pico', current:id, order:[id], trials:{[id]: Object.assign(blankTrial(), JSON.parse(JSON.stringify(EXAMPLE)))}};
+}
+if (!S.trials[S.current]) S.current = S.order[0];
+const ex = S.trials.example;
+if (ex && ex.example && (ex.exV || 0) < EX_VERSION) S.trials.example = Object.assign({notes:{}, assump:{}}, JSON.parse(JSON.stringify(EXAMPLE)));
+Object.values(S.trials).forEach(t => { const d = t.data || {}; if (d.designEffect && !d.rrr){ const v = +d.designEffect; if (v > 0 && v < 1) d.rrr = String(Math.round((1 - v) * 1000) / 10); } });
+const T = () => { const t = S.trials[S.current]; t.cl = t.cl || {}; return t; };
+const active = () => T().data;
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = (sel, el=document) => el.querySelector(sel);
+const num = v => { if (v === '' || v == null) return NaN; const n = +String(v).replace(/,/g,''); return Number.isFinite(n) ? n : NaN; };
+const f2 = x => Number.isFinite(x) ? x.toFixed(2) : '—';
+const pct = (x, d=1) => Number.isFinite(x) ? (x*100).toFixed(d) + '%' : '—';
+const pfmt = p => !Number.isFinite(p) ? '—' : p < 0.001 ? '<0.001' : p.toFixed(3);
+const intf = x => Number.isFinite(x) ? Math.round(x).toLocaleString() : '—';
+const trialName = t => (t.data.acronym || 'Untitled trial') + (t.example ? ' (example)' : '');
+
+/* ---------- library ---------- */
+function renderLibrary(){
+  const sel = $('#trial-pick');
+  sel.innerHTML = S.order.map(id => `<option value="${esc(id)}" ${id === S.current ? 'selected' : ''}>${esc(trialName(S.trials[id]))}</option>`).join('');
+}
+$('#trial-pick').addEventListener('change', e => { S.current = e.target.value; save(); renderAll(); });
+$('#trial-new').addEventListener('click', () => {
+  const id = newId(); S.trials[id] = blankTrial(); S.order.push(id); S.current = id; S.tab = 'pico'; save(); renderAll();
+  setTimeout(() => $('#trial-name')?.focus(), 0);
+});
+$('#trial-del').addEventListener('click', () => {
+  const t = T();
+  if (!confirm(`Delete "${trialName(t)}" and everything entered for it? This cannot be undone.`)) return;
+  delete S.trials[S.current]; S.order = S.order.filter(id => id !== S.current);
+  if (!S.order.length){ const id = newId(); S.trials[id] = blankTrial(); S.order = [id]; S.tab = 'pico'; }
+  S.current = S.order[0]; save(); renderAll();
+});
+
+/* ---------- header ---------- */
+function renderHeader(){
+  const x = T().data;
+  $('#hdr').innerHTML = `
+    <div class="eyebrow" style="text-transform:none;letter-spacing:.01em;font-size:.9rem">Critical appraisal tool for Journal Club</div>
+    <label for="trial-name" class="sr">Trial name</label>
+    <input id="trial-name" class="acronym name-input" placeholder="Name this trial" autocomplete="off" value="${esc(x.acronym || '')}">
+    <div id="hdr-banner"></div>`;
+  $('#trial-name').addEventListener('input', e => { T().data.acronym = e.target.value; save(); renderLibrary(); });
+  updateBanner();
+}
+function updateBanner(){
+  const t = T(), x = t.data, el = $('#hdr-banner'); if (!el) return;
+  el.innerHTML = t.example
+    ? `<div class="banner"><span class="dot"></span><span>Loaded with <b>DanGer Shock</b> as an example. Choose <b>New trial</b> to appraise another.</span></div>`
+    : '';
+}
+
+/* ---------- tabs ---------- */
+function setTab(t){
+  S.tab = t; save();
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  render();
+}
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+function render(){
+  const m = $('#main'); m.innerHTML = '';
+  const sec = document.createElement('section'); sec.className = 'panel'; sec.setAttribute('role','tabpanel');
+  sec.setAttribute('aria-labelledby', 'tab-' + S.tab); m.appendChild(sec);
+  ({pico:renderPico, check:renderChecklist, results:renderResults, discuss:renderDiscuss}[S.tab] || renderPico)(sec);
+}
+function renderAll(){ renderLibrary(); renderHeader(); if (S.tab === 'data' || S.tab === 'numbers') S.tab = 'results'; setTab(document.getElementById('tab-' + S.tab) ? S.tab : 'pico'); }
+function onDataChange(){ save(); updateBanner(); renderLibrary(); }
+
+/* ---------- PICO ---------- */
+function question(x){
+  const g = (v, label) => v ? esc(v.charAt(0).toLowerCase() + v.slice(1)) : `<span class="gap">[${label}]</span>`;
+  return `In ${g(x.population,'population')}, does ${g(x.intervention,'intervention')}, compared with ${g(x.comparator,'comparison')}, change ${g(x.outcome,'outcome')}?`;
+}
+function renderPico(sec){
+  const x = active();
+  sec.innerHTML = `<p class="lede">Define the trial's question before looking at the results. Write each element as the trial actually defined it, not as you would have wanted it.</p>
+    <div class="pico-grid">${PICO.map(p => `
+      <div class="pico-card">
+        <div class="head"><span class="letter" aria-hidden="true">${p.L}</span><div><div class="name">${p.name}</div><div class="def">${p.def}</div></div></div>
+        <ul>${p.ask.map(a => `<li>${a}</li>`).join('')}</ul>
+        <label class="sr" for="pico-${p.k}" style="position:absolute;left:-9999px">${p.name}</label>
+        <textarea id="pico-${p.k}" data-k="${p.k}" placeholder="${esc(p.ph)}">${esc(x[p.k] || '')}</textarea>
+      </div>`).join('')}</div>
+    <div class="question"><span class="eyebrow">The trial's question</span><p id="pq">${question(x)}</p></div>
+    <div class="row"><button class="btn primary" id="to-check">Continue to the checklist</button></div>`;
+  $('#to-check', sec).addEventListener('click', () => { setTab('check'); scrollTo({top: $('.bar').offsetTop - 4}); });
+  sec.querySelectorAll('[data-k]').forEach(el => el.addEventListener('input', () => {
+    active()[el.dataset.k] = el.value; $('#pq', sec).innerHTML = question(active()); onDataChange();
+  }));
+}
+
+
+/* ---------- Checklist ---------- */
+const YN = [['yes','Yes'],['no','No'],['unclear',"Can't tell"]];
+const CHECKLIST = [
+  {sec:'Are the results valid?', items:[
+    {id:'random', q:'Was the assignment of patients to treatments randomised, and was allocation concealed?', hint:'How was the sequence generated (computer, central web system)? Could anyone enrolling patients know or predict the next assignment (sealed envelopes, alternation, date of birth)?', ans:YN},
+    {id:'blind', q:'Is the study blinded?', hint:'Who was blinded: patients, treating clinicians, outcome assessors, data analysts? Placebo or sham? Could side effects reveal allocation?', ans:YN},
+    {id:'same', q:'Are both groups treated in exactly the same way apart from the intervention?', hint:'Co-interventions, visit schedules, monitoring and background therapy. Did one arm get more attention or more tests?', ans:YN},
+    {id:'baseline', q:'Are both groups similar at baseline? If there are differences, are they explained or accounted for in the analysis?', hint:'Look at Table 1 for prognostic factors, not P values. Was randomisation stratified, or the analysis adjusted?', ans:YN},
+    {id:'ltfu', q:'Was there loss to follow-up, and why?', hint:'How many, in which arm, and for what reasons? Could the missing patients have had different outcomes?', ans:YN, helper:'ltfu'},
+    {id:'itt', q:'Is an intention-to-treat analysis presented? How many people were analysed compared with the initial sample size?', hint:'Compare the number analysed for the primary outcome with the number randomised in each arm (CONSORT diagram).', ans:YN, helper:'itt'},
+    {id:'selective', q:'Was the primary outcome reported as it was pre-specified?', hint:'Compare the primary outcome, time point and analysis in the paper with the trial registry entry (e.g. ClinicalTrials.gov) and the protocol. Were changes made after unblinding, or not disclosed?', ans:YN}
+  ]},
+  {sec:'What are the results?', items:[
+    {id:'stats', q:'What is the statistical analysis of the primary outcome?', hint:'Which test or model (e.g. Cox regression, log-rank, logistic regression)? Pre-specified? Adjusted for stratification factors? Multiplicity handled?', helper:'stats'},
+    {id:'size', q:'How large was the treatment effect?', hint:'Give both the relative effect (HR, RR) and the absolute effect (risk difference, NNT).', helper:'size'},
+    {id:'precision', q:'How precise was the estimate of the treatment effect?', hint:'Look at the 95% confidence interval. Does it exclude no effect? Does it include effects too small to matter?', helper:'precision'}
+  ]},
+  {sec:'Will the results help my patients?', items:[
+    {id:'apply', q:'Can the results be applied to my patient care?', hint:'Are your patients similar to those enrolled (age, severity, comorbidities, setting)? Were there run-in periods or exclusions that make the trial population healthier?', ans:YN},
+    {id:'outcomes', q:'Were all clinically important outcomes considered?', hint:'Mortality, symptoms, function, quality of life and harms, not only surrogates or composites.', ans:YN},
+    {id:'worth', q:'Are the likely treatment benefits worth the potential harms and costs?', hint:'Weigh the NNT against the number needed to harm, cost and treatment burden.', ans:YN}
+  ]}
+];
+const CL_ITEMS = CHECKLIST.flatMap(s => s.items);
+const ANSWER_LABEL = Object.fromEntries(YN);
+function clAnswered(t, it){ const v = t.cl[it.id] || {}; return it.ans ? !!v.a : !!(v.note && v.note.trim()); }
+function helperHTML(kind){
+  const x = active(), C = computeAll(x);
+  const go = `<a data-go="results">Results &amp; precision</a>`;
+  const n1 = num(x.n1), n2 = num(x.n2), N = n1 + n2, ltfu = num(x.ltfu);
+  if (kind === 'ltfu'){
+    if (!Number.isFinite(ltfu)) return `<div class="helper">Enter the number lost to follow-up on ${go} to see it here.</div>`;
+    let s = `<span><b>${intf(ltfu)}</b> lost to follow-up${Number.isFinite(N) ? ` of <b>${intf(N)}</b> randomised (${pct(ltfu / N)})` : ''}.</span>`;
+    if (C.frag && !C.frag.reverse) s += `<span>${C.frag.index <= ltfu ? 'More patients were lost than the fragility index (' + C.frag.index + '), so the missing data alone could overturn significance.' : 'Fewer patients were lost than the fragility index (' + C.frag.index + ').'}</span>`;
+    return `<div class="helper">${s}</div>`;
+  }
+  if (kind === 'itt'){
+    if (!Number.isFinite(N)) return `<div class="helper">Enter the number randomised per arm on ${go} to see it here.</div>`;
+    return `<div class="helper"><span>Randomised: <span class="mono">${esc(x.arm1Label || 'Intervention')} ${intf(n1)} · ${esc(x.arm2Label || 'Control')} ${intf(n2)} · total ${intf(N)}</span></span><span>Check that the primary analysis uses these same numbers.</span></div>`;
+  }
+  if (kind === 'stats'){
+    if (!x.measure && !x.est) return `<div class="helper">Enter the reported effect on ${go} to see it here.</div>`;
+    const model = {HR:'a hazard ratio, usually from a Cox proportional-hazards model (check the proportional-hazards assumption)', RR:'a risk ratio (log-binomial or Poisson model, or a crude 2×2 comparison)', OR:'an odds ratio, usually from logistic regression (overstates the risk ratio when events are common)'}[x.measure];
+    return `<div class="helper"><span>Reported as ${model || 'a ratio'}${x.pReported ? `; P = <span class="mono">${esc(x.pReported)}</span>` : ''}.</span></div>`;
+  }
+  if (kind === 'size'){
+    if (!C.bin && !C.eff) return `<div class="helper">Enter event counts or the reported effect on ${go} to see it here.</div>`;
+    const parts = [];
+    if (C.eff && C.eff.from === 'reported') parts.push(`Relative: <span class="mono">${esc(C.eff.measure)} ${f2(C.eff.est)}</span> (a ${Math.abs((1 - C.eff.est) * 100).toFixed(0)}% relative ${C.eff.est < 1 ? 'reduction' : 'increase'})`);
+    if (C.bin){ const nn = nntText(C.bin); parts.push(`Absolute: <span class="mono">${pct(C.bin.r2)} → ${pct(C.bin.r1)}</span>, a difference of <span class="mono">${(C.bin.arr * 100).toFixed(1)}</span> percentage points; ${nn.kind} <span class="mono">${nn.main}</span>${x.followup ? ' over ' + esc(x.followup.toLowerCase()) : ''}`); }
+    return `<div class="helper">${parts.map(p => `<span>${p}</span>`).join('')}<span><a data-go="results">Full calculations on Results &amp; precision</a></span></div>`;
+  }
+  if (kind === 'precision'){
+    if (!C.eff && !C.bin) return `<div class="helper">Enter the 95% CI or event counts on ${go} to see it here.</div>`;
+    const parts = [];
+    if (C.eff){
+      const crosses = C.eff.lo < 1 && C.eff.hi > 1;
+      parts.push(`95% CI <span class="mono">${f2(C.eff.lo)}–${f2(C.eff.hi)}</span>${C.eff.from === 'counts' ? ' (risk ratio from counts)' : ''}: ${crosses ? 'includes no effect' : 'excludes no effect'}.`);
+    }
+    if (x.design === 'ni'){ const E = niEval(x, C); if (E.rows) parts.push(`Against the non-inferiority margin (${fmtNI(E.m, E.scale)}${E.scale === 'ratio' ? '' : ' pts'}): <b>${E.rows[0].v.t.toLowerCase()}</b>.`); }
+    if (C.bin) parts.push(`Risk difference 95% CI <span class="mono">${(C.bin.arrLo * 100).toFixed(1)} to ${(C.bin.arrHi * 100).toFixed(1)}</span> points.`);
+    return `<div class="helper">${parts.map(p => `<span>${p}</span>`).join('')}</div>`;
+  }
+  return '';
+}
+function renderChecklist(sec){
+  const t = T();
+  const done = CL_ITEMS.filter(it => clAnswered(t, it)).length;
+  const cnt = k => CL_ITEMS.filter(it => (t.cl[it.id] || {}).a === k).length;
+  let qn = 0;
+  sec.innerHTML = `<p class="lede">Work through each question with the paper open. Answer yes, no or can't tell where it applies, and note the evidence. Where the trial's numbers help, they appear under the question.</p>
+    <div class="card cl-prog" id="clprog"></div>
+    ${CHECKLIST.map(s => `<div class="cl-sec"><h2>${s.sec}</h2>
+      ${s.items.map(it => { qn++; const v = t.cl[it.id] || {};
+        return `<article class="cl-item" data-id="${it.id}">
+          <div class="qrow"><span class="qn">${qn}</span><div class="stack" style="gap:4px"><div class="qt">${it.q}</div><div class="hint">${it.hint}</div></div></div>
+          ${it.ans ? `<div class="ans" role="group" aria-label="Answer">${it.ans.map(([k, l]) => `<button data-a="${k}" aria-pressed="${v.a === k}">${l}</button>`).join('')}</div>` : ''}
+          ${it.helper ? `<div data-helper="${it.helper}">${helperHTML(it.helper)}</div>` : ''}
+          <div class="f"><label for="cl-${it.id}">${it.ans ? 'Evidence from the paper' : 'Your answer'}</label><textarea id="cl-${it.id}" data-note>${esc(v.note || '')}</textarea></div>
+        </article>`; }).join('')}
+    </div>`).join('')}
+    <div class="row"><button class="btn primary" id="to-data">Continue to results &amp; precision</button></div>`;
+  const prog = () => {
+    const d = CL_ITEMS.filter(it => clAnswered(t, it)).length;
+    $('#clprog', sec).innerHTML = `<span><b style="color:var(--ink)">${d} of ${CL_ITEMS.length}</b> answered</span><span class="cl-bar" aria-hidden="true"><i style="width:${d / CL_ITEMS.length * 100}%"></i></span><span>Yes ${cnt('yes')} · No ${cnt('no')} · Can't tell ${cnt('unclear')}</span>`;
+  };
+  prog();
+  sec.querySelectorAll('.cl-item').forEach(el => {
+    const id = el.dataset.id, rec = () => (t.cl[id] = t.cl[id] || {});
+    el.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => {
+      const r = rec(); r.a = r.a === b.dataset.a ? undefined : b.dataset.a; save();
+      el.querySelectorAll('[data-a]').forEach(x => x.setAttribute('aria-pressed', x.dataset.a === r.a)); prog();
+    }));
+    $('[data-note]', el).addEventListener('input', e => { rec().note = e.target.value; save(); prog(); });
+  });
+  sec.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g){ e.preventDefault(); setTab(g.dataset.go); } });
+  $('#to-data', sec).addEventListener('click', () => { setTab('results'); scrollTo({top: $('.bar').offsetTop - 4}); });
+}
+
+/* ---------- Trial data ---------- */
+function renderResults(sec){
+  const x = active();
+  const kind = x.design === 'ni' ? 'ni' : 'sup';
+  const fields = DATA_FIELDS.filter(f => !f.only || f.only === kind);
+  const groups = [...new Set(fields.map(f => f.g))];
+  sec.innerHTML = `<div class="row" style="justify-content:space-between">
+      <p class="lede" style="flex:1 1 420px">For the below calculations, enter the numbers from the paper</p>
+      <div class="srcwrap"><span>Trial type</span><div class="seg" role="group" aria-label="Trial type">
+        <button data-kind="sup" aria-pressed="${kind === 'sup'}">Superiority</button><button data-kind="ni" aria-pressed="${kind === 'ni'}">Non-inferiority</button>
+      </div></div>
+    </div>
+    <div class="fields card">${groups.map(g => `
+      <fieldset><legend class="eyebrow">${esc(g)}</legend>
+        <div class="grid">${fields.filter(f => f.g === g).map(f => field(f, x)).join('')}</div>
+      </fieldset>`).join('')}
+      <div class="row"><button class="btn ghost" id="clr">Clear these numbers</button></div>
+    </div>
+    <div id="calc" class="stack" style="gap:22px"></div>`;
+  const calc = $('#calc', sec);
+  renderNumbers(calc);
+  sec.querySelectorAll('[data-kind]').forEach(b => b.addEventListener('click', () => { active().design = b.dataset.kind; save(); render(); }));
+  let tmr;
+  sec.querySelectorAll('[data-k]').forEach(inp => inp.addEventListener(inp.tagName === 'SELECT' ? 'change' : 'input', () => {
+    active()[inp.dataset.k] = inp.value; onDataChange();
+    clearTimeout(tmr); tmr = setTimeout(() => renderNumbers(calc), 200);
+  }));
+  $('#clr', sec).addEventListener('click', () => {
+    if (!confirm('Clear the numbers for this trial? The PICO, checklist and notes are kept.')) return;
+    DATA_FIELDS.forEach(f => delete active()[f.k]); onDataChange(); render();
+  });
+}
+function field(f, x){
+  const id = 'fld-' + f.k, v = x[f.k] ?? '';
+  const style = f.wide ? ' style="grid-column:1/-1"' : '';
+  const ctl = f.sel
+    ? `<select id="${id}" data-k="${f.k}"><option value="">—</option>${f.sel.map(o => `<option ${v === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`
+    : `<input id="${id}" data-k="${f.k}" ${f.num ? 'inputmode="decimal" class="num"' : ''} value="${esc(v)}" ${f.ph ? `placeholder="${esc(f.ph)}"` : ''} autocomplete="off">`;
+  return `<div class="f"${style}><label for="${id}">${esc(f.label)}</label>${ctl}</div>`;
+}
+
+/* ---------- Numbers ---------- */
+function computeAll(x){
+  const n1 = num(x.n1), e1 = num(x.e1), n2 = num(x.n2), e2 = num(x.e2);
+  const out = {x};
+  if ([n1,e1,n2,e2].every(Number.isFinite) && n1 > 0 && n2 > 0 && e1 >= 0 && e2 >= 0 && e1 <= n1 && e2 <= n2){
+    out.bin = Stats.binary(e1, n1, e2, n2);
+    out.frag = Stats.fragility(e1, n1, e2, n2);
+    out.N = n1 + n2;
+  }
+  const est = num(x.est), lo = num(x.lo), hi = num(x.hi);
+  if ([est,lo,hi].every(v => Number.isFinite(v) && v > 0) && lo < est && est < hi){
+    out.eff = {measure: x.measure || 'Ratio', est, lo, hi, log: Math.log(est), se: Stats.seFromCI(lo, hi), from:'reported'};
+  } else if (out.bin && e1 > 0 && e2 > 0){
+    out.eff = {measure:'RR', est: out.bin.rr, lo: out.bin.rrLo, hi: out.bin.rrHi, log: Math.log(out.bin.rr), se: (Math.log(out.bin.rrHi) - Math.log(out.bin.rrLo)) / (2*Stats.Z), from:'counts'};
+  }
+  const A = T().assump;
+  const rrr = num(x.rrr);
+  out.design = rrr > 0 && rrr < 100 ? 1 - rrr / 100 : num(x.designEffect);
+  out.truth = num(A.truth ?? out.design);
+  return out;
+}
+function nntText(b){
+  const {arr, arrLo, arrHi} = b;
+  const cl = v => Math.ceil(v - 1e-9);
+  const lab = v => v > 0 ? `${cl(1/v)} to benefit` : `${cl(-1/v)} to harm`;
+  const main = arr > 0 ? `${cl(1/arr)}` : arr < 0 ? `${cl(-1/arr)}` : '∞';
+  const kind = arr > 0 ? 'NNT (benefit)' : 'NNH (harm)';
+  let ci;
+  if (arrLo > 0 || arrHi < 0) ci = `95% CI ${cl(1/Math.abs(arrHi))}–${cl(1/Math.abs(arrLo))}`;
+  else ci = `95% CI ${lab(arrHi)} … ∞ … ${lab(arrLo)}`;
+  return {main, kind, ci};
+}
+function renderNumbers(sec){
+  const x = active();
+  const C = computeAll(x);
+  const who = 'the values above';
+  if (!C.bin && !C.eff){
+    sec.innerHTML = '';
+    return;
+  }
+  const a1 = esc(x.arm1Label || 'Intervention'), a2 = esc(x.arm2Label || 'Control');
+  let h = '';
+  const isNI = x.design === 'ni';
+
+  if (C.bin){
+    const b = C.bin, nn = nntText(b);
+    h += `<div class="stack"><h2>Number needed to treat</h2>
+    <div class="card" style="display:grid;gap:4px;max-width:380px">
+      <span class="small muted">${nn.kind}${x.followup ? ', ' + esc(x.followup.toLowerCase()) : ''}</span>
+      <span class="num" style="font-size:2.1rem;line-height:1.1">${nn.main}</span>
+      <span class="small muted">${nn.ci} · ${pct(b.r2)} vs ${pct(b.r1)}</span>
+    </div></div>`;
+
+    const fr = C.frag, ltfu = num(x.ltfu);
+    if (fr && !isNI){
+      const fq = fr.index / C.N;
+      const flag = Number.isFinite(ltfu) ? (fr.index <= ltfu
+        ? `<span class="flag warn">Fragility index ≤ lost to follow-up (${intf(ltfu)})</span>`
+        : `<span class="flag okay">Fragility index &gt; lost to follow-up (${intf(ltfu)})</span>`) : '';
+      h += `<div class="stack"><h2>${fr.reverse ? 'Reverse fragility' : 'Fragility'}</h2>
+      <div class="two">
+        <div class="tiles" style="grid-template-columns:1fr 1fr">
+          <div class="tile"><span class="k">${fr.reverse ? 'Reverse fragility index' : 'Fragility index'}</span><span class="v">${fr.index}</span><span class="s">events changed in ${fr.arm === 1 ? a1 : a2}</span></div>
+          <div class="tile"><span class="k">Fragility quotient</span><span class="v">${(fq*100).toFixed(2)}%</span><span class="s">index ÷ ${intf(C.N)} randomised</span></div>
+        </div>
+        <div class="callout stack" style="gap:8px">
+          <p>${fr.reverse
+            ? `The result is not significant by Fisher's test. Converting <b>${fr.index}</b> patient${fr.index>1?'s':''} in the ${fr.arm===1?a1:a2} arm from non-event to event would push P below 0.05.`
+            : `Converting <b>${fr.index}</b> patient${fr.index>1?'s':''} in the ${fr.arm===1?a1:a2} arm from non-event to event is enough to lose significance (Fisher P = ${pfmt(fr.p)}).`}</p>
+          ${flag}
+        </div>
+      </div></div>`;
+    }
+  }
+
+  h += isNI ? niSection(x, C) : ppSection(x, C);
+
+  if (C.eff && !isNI) h += `<div id="design" class="stack"></div>`;
+
+  sec.innerHTML = h;
+  if (C.eff && !isNI) drawDesign($('#design', sec), C);
+}
+
+function retroCurve(E){
+  const dir = E.log < 0 ? -1 : 1;
+  const dmax = Math.max(Math.abs(E.log) * 1.7, 0.5), dmin = 0.02;
+  const pts = [];
+  for (let i = 0; i <= 90; i++){
+    const d = dmin + (dmax - dmin) * i / 90;
+    const r = Stats.retrodesign(d, E.se);
+    pts.push({d, hr: Math.exp(dir * d), power: r.power, typeS: r.typeS, typeM: r.exaggeration});
+  }
+  return {dir, dmin, dmax, pts};
+}
+function retroChart(E, C){
+  const {dir, dmin, dmax, pts} = C.curve;
+  const W = 640, H = 250, L = 42, R = 52, T = 26, B = 40, TM = 6;
+  const X = d => L + (dmax - d) / (dmax - dmin) * (W - L - R);
+  const Y = p => H - B - p * (H - B - T);
+  const Ym = m => H - B - (Math.min(m, TM) - 1) / (TM - 1) * (H - B - T);
+  const TMC = 'var(--burnt)', TSC = '#7D5BA6';
+  const line = (f, col, dash, keep) => {
+    let d = '', pen = false;
+    pts.forEach(p => { if (keep && !keep(p)){ pen = false; return; } d += (pen ? 'L' : 'M') + X(p.d).toFixed(1) + ' ' + f(p).toFixed(1); pen = true; });
+    return `<path d="${d}" fill="none" stroke="${col}" stroke-width="2" ${dash ? `stroke-dasharray="${dash}"` : ''} stroke-linejoin="round"/>`;
+  };
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Power, Type S and Type M against the assumed true effect" style="min-width:520px">`;
+  [0, .25, .5, .75, 1].forEach(p => {
+    s += `<line x1="${L}" x2="${W - R}" y1="${Y(p)}" y2="${Y(p)}" stroke="var(--line)"/>`;
+    s += `<text class="chart-text" x="${L - 6}" y="${Y(p) + 4}" text-anchor="end">${(p * 100).toFixed(0)}%</text>`;
+  });
+  [1, 2, 3, 4, 5, 6].forEach(m => s += `<text class="chart-text" x="${W - R + 8}" y="${Ym(m) + 4}" fill="var(--burnt)">${m}×</text>`);
+  const cands = dir < 0 ? [0.5,0.6,0.7,0.75,0.8,0.85,0.9,0.95,0.98] : [2,1.7,1.5,1.4,1.3,1.2,1.1,1.05,1.02];
+  cands.forEach(hr => { const d = Math.abs(Math.log(hr)); if (d < dmin || d > dmax) return;
+    s += `<line x1="${X(d)}" x2="${X(d)}" y1="${T}" y2="${H - B}" stroke="var(--line)" stroke-width=".6"/>`;
+    s += `<text class="chart-text" x="${X(d)}" y="${H - B + 15}" text-anchor="middle">${hr}</text>`; });
+  s += line(p => Y(p.typeS), TSC, '3 3') + line(p => Ym(p.typeM), TMC, '', p => p.typeM <= TM);
+  const at = hr => pts.reduce((best, p) => Math.abs(p.hr - hr) < Math.abs(best.hr - hr) ? p : best, pts[0]);
+  const near = at(dir < 0 ? 0.92 : 1.09);
+  const t = C.truth;
+  if (t > 0 && Math.abs(Math.log(t)) >= dmin && Math.abs(Math.log(t)) <= dmax){
+    const d0 = Math.abs(Math.log(t)), r0 = Stats.retrodesign(Math.log(t), E.se);
+    const p = {d: d0, typeM: r0.exaggeration, typeS: r0.typeS}, xp = X(d0);
+    s += `<line x1="${xp}" x2="${xp}" y1="${T - 8}" y2="${H - B}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3"/>`;
+    s += `<text class="chart-text" x="${xp}" y="${T - 12}" text-anchor="middle" fill="var(--ink)">true ${esc(E.measure)} ${f2(t)}</text>`;
+    s += `<circle cx="${xp}" cy="${Ym(Math.min(p.typeM, TM))}" r="4.5" fill="${TMC}"/>`;
+    s += `<text class="chart-label" x="${xp + 8}" y="${Ym(Math.min(p.typeM, TM)) - 7}" fill="${TMC}">${p.typeM.toFixed(2)}×</text>`;
+    s += `<circle cx="${xp}" cy="${Y(p.typeS)}" r="4.5" fill="${TSC}"/>`;
+    s += `<text class="chart-label" x="${xp + 8}" y="${Y(p.typeS) - 8}" fill="${TSC}">${p.typeS < 0.0001 ? '<0.01%' : pct(p.typeS, 2)}</text>`;
+  }
+  s += `<text class="chart-label" x="${X(near.d) - 6}" y="${Ym(near.typeM) - 8}" text-anchor="end" fill="${TMC}">Type M</text>`;
+  s += `<text class="chart-label" x="${X(near.d) - 6}" y="${Y(near.typeS) - 8}" text-anchor="end" fill="${TSC}">Type S</text>`;
+  s += `<text class="chart-text" x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle">assumed true ${esc(E.measure)} — weaker effects to the right</text>`;
+  return s + '</svg>';
+}
+function drawDesign(el, C){
+  const E = C.eff, m = esc(E.measure);
+  C.curve = retroCurve(E);
+  el.innerHTML = `<h2>Design analysis: Type S and Type M error</h2>
+    <p class="lede">How a trial of this precision (SE of log ${m} = <span class="mono">${E.se.toFixed(3)}</span>) behaves for each possible true effect: how often a significant result has the wrong sign (Type S), and how much it overstates the truth (Type M). (Gelman &amp; Carlin, 2014)</p>
+    <div class="card"><div class="assump">
+      <div class="f"><label for="as-truth">Plausible true effect</label>
+        <input id="as-truth" class="num" inputmode="decimal" value="${Number.isFinite(C.truth) ? C.truth : ''}" placeholder="e.g. 0.90">
+        <div class="row small" style="gap:6px">Set to <button class="btn ghost small" style="padding:2px 8px" data-truth="design">powered-for</button><button class="btn ghost small" style="padding:2px 8px" data-truth="half">half observed</button></div>
+      </div>
+    </div></div>
+    <div class="card"><div class="chartbox" id="retro-chart"></div></div>
+    <div id="design-tiles"></div>`;
+  const paint = () => {
+    const C2 = computeAll(active()); C2.curve = C.curve;
+    $('#retro-chart', el).innerHTML = retroChart(E, C2);
+    const t = C2.truth;
+    $('#design-tiles', el).innerHTML = (t > 0 && Math.abs(Math.log(t)) > 1e-6)
+      ? (() => { const r = Stats.retrodesign(Math.log(t), E.se); return `<div class="tiles">
+          <div class="tile"><span class="k">Type S (wrong sign) if the true ${m} is ${f2(t)}</span><span class="v">${r.typeS < 0.0001 ? '<0.01%' : pct(r.typeS, 2)}</span><span class="s">among significant results</span></div>
+          <div class="tile"><span class="k">Exaggeration ratio (Type M)</span><span class="v">${r.exaggeration.toFixed(2)}×</span><span class="s">on the log ${m} scale</span></div>
+        </div>`; })()
+      : '';
+  };
+  $('#as-truth', el).addEventListener('input', e => {
+    const v = e.target.value;
+    if (v === '') delete T().assump.truth; else T().assump.truth = v;
+    save(); paint();
+  });
+  el.querySelectorAll('[data-truth]').forEach(b => b.addEventListener('click', () => {
+    const C2 = computeAll(active()); const k = b.dataset.truth;
+    const v = k === 'design' ? C2.design : Math.exp(C2.eff.log / 2);
+    if (!(v > 0)) return;
+    T().assump.truth = +v.toFixed(3); save(); $('#as-truth', el).value = T().assump.truth; paint();
+  }));
+  paint();
+}
+
+/* ---------- Non-inferiority ---------- */
+function niScaleOf(x){
+  const m = num(x.niMargin);
+  if (x.niScale) return x.niScale.startsWith('Risk') ? 'rd' : 'ratio';
+  return m > 1 && m < 3 ? 'ratio' : 'rd';
+}
+function niEval(x, C){
+  const m = num(x.niMargin); if (!(m > 0)) return {need:'margin'};
+  const scale = niScaleOf(x), rows = [];
+  if (scale === 'ratio'){
+    if (!(m > 1)) return {need:'ratio-margin'};
+    if (!C.eff) return {need:'effect'};
+    rows.push({label:`Primary ${C.eff.measure}${C.eff.from === 'counts' ? ' (from counts)' : ''}`, est:C.eff.est, lo:C.eff.lo, hi:C.eff.hi});
+  } else {
+    if (!C.bin) return {need:'counts'};
+    const b = C.bin;
+    rows.push({label:'Primary analysis risk difference', est:(b.r1 - b.r2) * 100, lo:-b.arrHi * 100, hi:-b.arrLo * 100});
+  }
+  const pe = num(x.ppEst), pl = num(x.ppLo), ph = num(x.ppHi);
+  if ([pe,pl,ph].every(Number.isFinite) && pl < pe && pe < ph) rows.push({label:'Per-protocol', est:pe, lo:pl, hi:ph});
+  const nul = scale === 'ratio' ? 1 : 0;
+  rows.forEach(r => {
+    if (r.hi < nul) r.v = {k:'okay', t:'Non-inferior and superior'};
+    else if (r.hi < m && r.lo > nul) r.v = {k:'warn', t:'Non-inferior, but statistically worse'};
+    else if (r.hi < m) r.v = {k:'okay', t:'Non-inferior'};
+    else if (r.lo > m) r.v = {k:'bad', t:'Inferior'};
+    else r.v = {k:'warn', t:'Inconclusive'};
+  });
+  return {m, scale, nul, rows};
+}
+function fmtNI(v, scale){ return scale === 'ratio' ? f2(v) : (v > 0 ? '+' : '') + v.toFixed(1); }
+function niSection(x, C){
+  const E = niEval(x, C);
+  const need = {margin:'Enter the non-inferiority margin above to test non-inferiority.',
+    'ratio-margin':'A margin on the ratio scale should be above 1 (e.g. 1.3). For a margin in percentage points, choose "Risk difference" as the scale.',
+    effect:'Enter the reported effect and its 95% CI, or event counts, to compare with the margin.',
+    counts:'Enter events and randomised patients in each arm to calculate the risk difference.'}[E.need];
+  if (need) return `<div class="stack"><h2>Non-inferiority</h2><div class="helper"><span>${need}</span></div></div>`;
+  const u = E.scale === 'ratio' ? '' : ' pts';
+  const itt = E.rows[0], pp = E.rows[1];
+  const worst = E.scale === 'ratio'
+    ? `up to ${((itt.hi - 1) * 100).toFixed(0)}% relatively more events`
+    : `up to ${itt.hi.toFixed(1)} more events per 100 patients`;
+  const expl = {
+    'Non-inferior and superior': `The whole interval is below ${fmtNI(E.nul, E.scale)}, so the intervention is non-inferior and also better than control.`,
+    'Non-inferior': `The upper limit (${fmtNI(itt.hi, E.scale)}${u}) is below the margin (${fmtNI(E.m, E.scale)}${u}), so the trial rules out the intervention being worse by more than the margin.`,
+    'Non-inferior, but statistically worse': `The interval lies within the margin but entirely above ${fmtNI(E.nul, E.scale)}: non-inferior by the trial's own definition, yet probably somewhat worse than control. Is that loss acceptable?`,
+    'Inconclusive': `The interval crosses the margin (${fmtNI(E.m, E.scale)}${u}), so the trial cannot rule out the intervention being worse by more than the margin.`,
+    'Inferior': `The whole interval lies beyond the margin, so the intervention is worse than control by more than the margin.`
+  }[itt.v.t];
+  let ppNote;
+  if (!pp) ppNote = 'Enter the per-protocol result above. Non-inferiority should hold in both the primary and per-protocol analyses, because non-adherence and crossover push an intention-to-treat comparison towards "no difference".';
+  else if (pp.v.t.startsWith('Non-inferior') === itt.v.t.startsWith('Non-inferior')) ppNote = 'The primary and per-protocol analyses agree.';
+  else ppNote = `The primary and per-protocol analyses disagree (${itt.v.t.toLowerCase()} vs ${pp.v.t.toLowerCase()}), which weakens the non-inferiority claim.`;
+  return `<div class="stack"><h2>Non-inferiority</h2>
+    <div class="tiles">
+      <div class="tile"><span class="k">${esc(itt.label)}</span><span class="v">${fmtNI(itt.est, E.scale)}${u}</span><span class="s">95% CI ${fmtNI(itt.lo, E.scale)} to ${fmtNI(itt.hi, E.scale)}</span></div>
+      <div class="tile"><span class="k">Non-inferiority margin</span><span class="v">${fmtNI(E.m, E.scale)}${u}</span><span class="s">${E.scale === 'ratio' ? 'ratio scale' : 'risk difference'}</span></div>
+      <div class="tile"><span class="k">Worst case compatible with the data</span><span class="v">${fmtNI(itt.hi, E.scale)}${u}</span><span class="s">${worst}</span></div>
+    </div>
+    <div class="card stack">
+      <div class="row">${E.rows.map(r => `<span class="flag ${r.v.k}">${esc(r.label)}: ${r.v.t}</span>`).join('')}</div>
+      <div class="chartbox">${niChart(E)}</div>
+    </div>
+    <p class="callout">${expl} ${ppNote}</p>
+    <p class="small muted">Assumes the primary outcome is an adverse event, so higher values mean the intervention is worse. A two-sided 95% CI has the same upper limit as the one-sided 97.5% interval many non-inferiority trials report.</p>
+  </div>`;
+}
+function niChart(E){
+  const W = 640, rowH = 40, T = 30, B = 30, L = 110, R = 20, H = T + B + rowH * E.rows.length;
+  const hasM = Number.isFinite(E.m);
+  const tr = E.scale === 'ratio' ? Math.log : (v => v);
+  let lo = Math.min(E.nul, ...E.rows.map(r => r.lo)), hi = Math.max(hasM ? E.m : -Infinity, ...E.rows.map(r => r.hi));
+  const pad = (tr(hi) - tr(lo)) * 0.12 || 0.1;
+  const a = tr(lo) - pad, z = tr(hi) + pad;
+  const X = v => L + (tr(v) - a) / (z - a) * (W - L - R);
+  const ticks = [];
+  if (E.scale === 'ratio'){ [0.5,0.6,0.7,0.75,0.8,0.85,0.9,0.95,1,1.1,1.2,1.3,1.5,1.75,2,2.5,3].forEach(t => { if (tr(t) >= a && tr(t) <= z) ticks.push(t); }); }
+  else { const span = z - a, step = span > 20 ? 5 : span > 8 ? 2 : span > 4 ? 1 : 0.5; for (let t = Math.ceil(a / step) * step; t <= z; t += step) ticks.push(+t.toFixed(2)); }
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Confidence intervals compared with the non-inferiority margin" style="min-width:480px">`;
+  if (hasM) s += `<rect x="${X(E.m)}" y="${T - 6}" width="${W - R - X(E.m)}" height="${H - T - B + 12}" fill="var(--high-bg)"/>`;
+  if (hasM) s += `<text class="chart-text" x="${W - R - 4}" y="${T - 10}" text-anchor="end">worse than margin</text>`;
+  ticks.forEach(t => { const x = X(t); s += `<line x1="${x}" x2="${x}" y1="${T - 6}" y2="${H - B + 6}" stroke="var(--line)"/><text class="chart-text" x="${x}" y="${H - 8}" text-anchor="middle">${E.scale === 'ratio' ? t : (t > 0 ? '+' : '') + t}</text>`; });
+  s += `<line x1="${X(E.nul)}" x2="${X(E.nul)}" y1="${T - 12}" y2="${H - B + 6}" stroke="var(--ink)" stroke-width="1.2"/><text class="chart-text" x="${X(E.nul) - 4}" y="${T - 14}" text-anchor="end">no difference</text>`;
+  if (hasM) s += `<line x1="${X(E.m)}" x2="${X(E.m)}" y1="${T - 12}" y2="${H - B + 6}" stroke="var(--high)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  E.rows.forEach((r, i) => {
+    const y = T + rowH * i + rowH / 2;
+    s += `<text class="chart-text" x="${L - 10}" y="${y + 4}" text-anchor="end">${esc(r.label.replace(' (from counts)', ''))}</text>`;
+    s += `<line x1="${X(r.lo)}" x2="${X(r.hi)}" y1="${y}" y2="${y}" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>`;
+    s += `<rect x="${X(r.est) - 5}" y="${y - 5}" width="10" height="10" fill="var(--accent)"/>`;
+  });
+  return s + `</svg>`;
+}
+
+function ppSection(x, C){
+  const pe = num(x.ppEst), pl = num(x.ppLo), ph = num(x.ppHi);
+  if (!([pe,pl,ph].every(Number.isFinite) && pl < pe && pe < ph) || !C.eff) return '';
+  const meas = C.eff.measure;
+  const verdict = r => r.hi < 1 ? {k:'okay', t:'Favours ' + esc(x.arm1Label || 'intervention')}
+    : r.lo > 1 ? {k:'bad', t:'Favours ' + esc(x.arm2Label || 'control')} : {k:'warn', t:'Not significant'};
+  const rows = [
+    {label:`Primary ${meas}`, est:C.eff.est, lo:C.eff.lo, hi:C.eff.hi},
+    {label:'Per-protocol', est:pe, lo:pl, hi:ph}
+  ];
+  rows.forEach(r => r.v = verdict(r));
+  const bigger = Math.abs(Math.log(pe)) > Math.abs(Math.log(C.eff.est)) * 1.1 && Math.sign(Math.log(pe)) === Math.sign(Math.log(C.eff.est));
+  const flipped = rows[0].v.t !== rows[1].v.t;
+  const note = flipped
+    ? `The two analyses reach different conclusions (${rows[0].v.t.toLowerCase()} vs ${rows[1].v.t.toLowerCase()}). Ask which one the paper leads with, and whether the protocol pre-specified it.`
+    : bigger
+      ? `The per-protocol effect (${f2(pe)}) is larger than the primary one (${f2(C.eff.est)}). That is the usual direction: dropping non-adherent patients removes people whose prognosis often differs, so the per-protocol estimate flatters the treatment.`
+      : `The two analyses agree, which is reassuring.`;
+  return `<div class="stack"><h2>Primary versus per-protocol</h2>
+    <div class="card stack">
+      <div class="row">${rows.map(r => `<span class="flag ${r.v.k}">${esc(r.label)}: ${r.v.t}</span>`).join('')}</div>
+      <div class="chartbox">${niChart({scale:'ratio', nul:1, rows})}</div>
+    </div>
+    <p class="callout">${note}</p>
+    <p class="small muted">In a superiority trial the intention-to-treat analysis is the conservative one, so the per-protocol result should support it, not carry the claim.</p>
+  </div>`;
+}
+
+
+/* ---------- Discussion ---------- */
+const PROMPTS = [
+  'Is the primary outcome one that matters to patients, and is a composite driven by its softest component?',
+  'Does the absolute benefit justify cost, burden and harms for a typical patient in your clinic?',
+  'Who was excluded, and do they look like your patients?',
+  'What would the next trial need to show to settle the question?'
+];
+function renderDiscuss(sec){
+  const t = T();
+  sec.innerHTML = `
+    <div class="stack"><h2>Discussion prompts</h2><div class="card"><ul class="clean">${PROMPTS.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div></div>
+    <div class="stack"><h2>Bottom line</h2><div class="card f"><label for="note-bl">What was shown, what remains uncertain, and would it change what you do?</label><textarea id="note-bl" data-n="bl" rows="4">${esc(t.notes.bl || '')}</textarea></div></div>`;
+  sec.querySelectorAll('[data-n]').forEach(b => b.addEventListener('input', () => { t.notes[b.dataset.n] = b.value; save(); }));
+}
+
+renderAll();
+})();
+</script>
+
+</body></html>
