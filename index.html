@@ -430,6 +430,9 @@ $('#trial-del').addEventListener('click', () => {
 
 /* ---------- export / import: one appraisal per file, added as a new trial on import ---------- */
 const FILE_TAG = 'critical-appraisal';
+// Inside a claude.ai artifact, files are saved through the viewer (it asks before saving).
+const downloadsP = window.claude && typeof window.claude.use === 'function'
+  ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
 $('#trial-export').addEventListener('click', async () => {
   const t = T();
   const body = {app: FILE_TAG, format: 1, exported: new Date().toISOString(),
@@ -437,6 +440,15 @@ $('#trial-export').addEventListener('click', async () => {
   const slug = (t.data.acronym || 'trial').trim().replace(/[^\w-]+/g, '-').replace(/^-+|-+$/g, '') || 'trial';
   const name = slug + '.appraisal.json';
   const blob = new Blob([JSON.stringify(body, null, 2)], {type: 'application/json'});
+  const dl = await downloadsP;
+  if (dl){
+    try { await dl.save({filename: name, data: blob}); }
+    catch (e) {
+      if (e && e.code === 'rate_limited') alert('A save is already waiting for your answer.');
+      else if (!e || e.code !== 'declined') alert('The file could not be saved here.');
+    }
+    return;
+  }
   // On phones, the share sheet (Mail, Messages, AirDrop, Files) is easier than a download.
   if (matchMedia('(pointer:coarse)').matches && navigator.canShare){
     const file = new File([blob], name, {type: 'application/json'});
