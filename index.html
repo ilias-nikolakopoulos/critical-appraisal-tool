@@ -842,9 +842,13 @@ function niSection(x, C){
   if (need) return `<div class="stack"><h2>Non-inferiority</h2><div class="helper"><span>${need}</span></div></div>`;
   const u = E.scale === 'ratio' ? '' : ' pts';
   const itt = E.rows[0], pp = E.rows[1];
-  const worst = E.scale === 'ratio'
-    ? `up to ${((itt.hi - 1) * 100).toFixed(0)}% relatively more events`
-    : `up to ${itt.hi.toFixed(1)} more events per 100 patients`;
+  // Upper limit above the null = possibly worse; below it = better even in the worst case.
+  const ex = E.scale === 'ratio' ? (itt.hi - 1) * 100 : itt.hi, dp = E.scale === 'ratio' ? 0 : 1;
+  const unit = E.scale === 'ratio' ? '% relatively' : '';
+  const per = E.scale === 'ratio' ? '' : ' per 100 patients';
+  const worst = +ex.toFixed(dp) > 0 ? `up to ${ex.toFixed(dp)}${unit} more events${per}`
+    : +ex.toFixed(dp) < 0 ? `at least ${(-ex).toFixed(dp)}${unit} fewer events${per}`
+    : 'no more events than control';
   const expl = {
     'Non-inferior and superior': `The whole interval is below ${fmtNI(E.nul, E.scale)}, so the intervention is non-inferior and also better than control.`,
     'Non-inferior': `The upper limit (${fmtNI(itt.hi, E.scale)}${u}) is below the margin (${fmtNI(E.m, E.scale)}${u}), so the trial rules out the intervention being worse by more than the margin.`,
