@@ -358,8 +358,8 @@ const DATA_FIELDS = [
   {g:'Primary outcome', k:'e2', label:'Events (control)', num:true},
   {g:'Primary outcome', k:'ltfu', label:'Lost to follow-up (total)', num:true},
   {g:'Primary outcome', k:'followup', label:'Follow-up'},
-  {g:'Primary analysis', k:'measure', label:'Effect measure', sel:['HR','RR','OR']},
-  {g:'Primary analysis', k:'est', label:'Point estimate', num:true},
+  {g:'Primary analysis', k:'measure', label:'Effect measure', sel:['HR','RR','OR','RD']},
+  {g:'Primary analysis', k:'est', label:'Point estimate', num:true, ph:'RD in percentage points'},
   {g:'Primary analysis', k:'lo', label:'95% CI lower', num:true},
   {g:'Primary analysis', k:'hi', label:'95% CI upper', num:true},
   {g:'Primary analysis', k:'pReported', label:'Reported P value'},
@@ -398,7 +398,7 @@ const active = () => T().data;
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $ = (sel, el=document) => el.querySelector(sel);
-const num = v => { if (v === '' || v == null) return NaN; const n = +String(v).replace(/,/g,''); return Number.isFinite(n) ? n : NaN; };
+const num = v => { if (v === '' || v == null) return NaN; const n = +String(v).replace(/,/g,'').replace(/\u2212/g,'-'); return Number.isFinite(n) ? n : NaN; };
 const f2 = x => Number.isFinite(x) ? x.toFixed(2) : '—';
 const pct = (x, d=1) => Number.isFinite(x) ? (x*100).toFixed(d) + '%' : '—';
 const pfmt = p => !Number.isFinite(p) ? '—' : p < 0.001 ? '<0.001' : p.toFixed(3);
@@ -523,22 +523,24 @@ function helperHTML(kind){
   }
   if (kind === 'stats'){
     if (!x.measure && !x.est) return `<div class="helper">Enter the reported effect on ${go} to see it here.</div>`;
-    const model = {HR:'a hazard ratio, usually from a Cox proportional-hazards model (check the proportional-hazards assumption)', RR:'a risk ratio (log-binomial or Poisson model, or a crude 2×2 comparison)', OR:'an odds ratio, usually from logistic regression (overstates the risk ratio when events are common)'}[x.measure];
+    const model = {HR:'a hazard ratio, usually from a Cox proportional-hazards model (check the proportional-hazards assumption)', RR:'a risk ratio (log-binomial or Poisson model, or a crude 2×2 comparison)', OR:'an odds ratio, usually from logistic regression (overstates the risk ratio when events are common)', RD:'a risk difference (absolute difference in event proportions, intervention minus control)'}[x.measure];
     return `<div class="helper"><span>Reported as ${model || 'a ratio'}${x.pReported ? `; P = <span class="mono">${esc(x.pReported)}</span>` : ''}.</span></div>`;
   }
   if (kind === 'size'){
     if (!C.bin && !C.eff) return `<div class="helper">Enter event counts or the reported effect on ${go} to see it here.</div>`;
     const parts = [];
-    if (C.eff && C.eff.from === 'reported') parts.push(`<span class="mono">${esc(C.eff.measure)} ${f2(C.eff.est)}</span> (a ${Math.abs((1 - C.eff.est) * 100).toFixed(0)}% relative ${C.eff.est < 1 ? 'reduction' : 'increase'})`);
-    if (C.bin){ const nn = nntText(C.bin); parts.push(`${nn.kind} <span class="mono">${nn.main}</span>${x.followup ? ' over ' + esc(x.followup.toLowerCase()) : ''}`); }
+    if (C.eff && C.eff.rd) parts.push(`<span class="mono">RD ${fmtEff(C.eff, C.eff.est)}</span> percentage points (an absolute ${C.eff.est < 0 ? 'reduction' : 'increase'})`);
+    else if (C.eff && C.eff.from === 'reported') parts.push(`<span class="mono">${esc(C.eff.measure)} ${f2(C.eff.est)}</span> (a ${Math.abs((1 - C.eff.est) * 100).toFixed(0)}% relative ${C.eff.est < 1 ? 'reduction' : 'increase'})`);
+    const nn = C.eff && C.eff.rd ? nntText(rdAsArr(C.eff)) : C.bin ? nntText(C.bin) : null;
+    if (nn) parts.push(`${nn.kind} <span class="mono">${nn.main}</span>${x.followup ? ' over ' + esc(x.followup.toLowerCase()) : ''}`);
     return `<div class="helper">${parts.map(p => `<span>${p}</span>`).join('')}<span><a data-go="results">Full calculations on Results &amp; precision</a></span></div>`;
   }
   if (kind === 'precision'){
     if (!C.eff && !C.bin) return `<div class="helper">Enter the 95% CI or event counts on ${go} to see it here.</div>`;
     const parts = [];
     if (C.eff){
-      const crosses = C.eff.lo < 1 && C.eff.hi > 1;
-      parts.push(`95% CI <span class="mono">${f2(C.eff.lo)}–${f2(C.eff.hi)}</span>${C.eff.from === 'counts' ? ' (risk ratio from counts)' : ''}: ${crosses ? 'includes no effect' : 'excludes no effect'}.`);
+      const nul = C.eff.rd ? 0 : 1, crosses = C.eff.lo < nul && C.eff.hi > nul;
+      parts.push(`95% CI <span class="mono">${fmtEff(C.eff, C.eff.lo)} to ${fmtEff(C.eff, C.eff.hi)}</span>${C.eff.rd ? ' percentage points' : ''}${C.eff.from === 'counts' ? ' (risk ratio from counts)' : ''}: ${crosses ? 'includes no effect' : 'excludes no effect'}.`);
     }
     if (x.design === 'ni'){ const E = niEval(x, C); if (E.rows) parts.push(`Against the non-inferiority margin (${fmtNI(E.m, E.scale)}${E.scale === 'ratio' ? '' : ' pts'}): <b>${E.rows[0].v.t.toLowerCase()}</b>.`); }
     return `<div class="helper">${parts.map(p => `<span>${p}</span>`).join('')}</div>`;
@@ -630,7 +632,9 @@ function computeAll(x){
     out.N = n1 + n2;
   }
   const est = num(x.est), lo = num(x.lo), hi = num(x.hi);
-  if ([est,lo,hi].every(v => Number.isFinite(v) && v > 0) && lo < est && est < hi){
+  if (x.measure === 'RD' && [est,lo,hi].every(Number.isFinite) && lo < est && est < hi){
+    out.eff = {measure:'RD', rd:true, est, lo, hi, from:'reported'};
+  } else if (x.measure !== 'RD' && [est,lo,hi].every(v => Number.isFinite(v) && v > 0) && lo < est && est < hi){
     out.eff = {measure: x.measure || 'Ratio', est, lo, hi, log: Math.log(est), se: Stats.seFromCI(lo, hi), from:'reported'};
   } else if (out.bin && e1 > 0 && e2 > 0){
     out.eff = {measure:'RR', est: out.bin.rr, lo: out.bin.rrLo, hi: out.bin.rrHi, log: Math.log(out.bin.rr), se: (Math.log(out.bin.rrHi) - Math.log(out.bin.rrLo)) / (2*Stats.Z), from:'counts'};
@@ -641,6 +645,9 @@ function computeAll(x){
   out.truth = num(A.truth ?? out.design);
   return out;
 }
+// Risk difference (intervention minus control, percentage points) as an absolute reduction, for nntText.
+const rdAsArr = e => ({arr: -e.est / 100, arrLo: -e.hi / 100, arrHi: -e.lo / 100});
+const fmtEff = (e, v) => e.rd ? (v > 0 ? '+' : '') + v.toFixed(1) : f2(v);
 function nntText(b){
   const {arr, arrLo, arrHi} = b;
   const cl = v => Math.ceil(v - 1e-9);
@@ -697,10 +704,10 @@ function renderNumbers(sec){
 
   h += isNI ? niSection(x, C) : ppSection(x, C);
 
-  if (C.eff && !isNI) h += `<div id="design" class="stack"></div>`;
+  if (C.eff && !C.eff.rd && !isNI) h += `<div id="design" class="stack"></div>`;
 
   sec.innerHTML = h;
-  if (C.eff && !isNI) drawDesign($('#design', sec), C);
+  if (C.eff && !C.eff.rd && !isNI) drawDesign($('#design', sec), C);
 }
 
 function retroCurve(E){
@@ -805,11 +812,12 @@ function niEval(x, C){
   if (scale === 'ratio'){
     if (!(m > 1)) return {need:'ratio-margin'};
     if (!C.eff) return {need:'effect'};
+    if (C.eff.rd) return {need:'rd-effect'};
     rows.push({label:`Primary ${C.eff.measure}${C.eff.from === 'counts' ? ' (from counts)' : ''}`, est:C.eff.est, lo:C.eff.lo, hi:C.eff.hi});
   } else {
-    if (!C.bin) return {need:'counts'};
-    const b = C.bin;
-    rows.push({label:'Primary analysis risk difference', est:(b.r1 - b.r2) * 100, lo:-b.arrHi * 100, hi:-b.arrLo * 100});
+    if (C.eff && C.eff.rd) rows.push({label:'Primary RD', est:C.eff.est, lo:C.eff.lo, hi:C.eff.hi});
+    else if (!C.bin) return {need:'counts'};
+    else { const b = C.bin; rows.push({label:'Primary analysis risk difference', est:(b.r1 - b.r2) * 100, lo:-b.arrHi * 100, hi:-b.arrLo * 100}); }
   }
   const pe = num(x.ppEst), pl = num(x.ppLo), ph = num(x.ppHi);
   if ([pe,pl,ph].every(Number.isFinite) && pl < pe && pe < ph) rows.push({label:'Per-protocol', est:pe, lo:pl, hi:ph});
@@ -829,7 +837,8 @@ function niSection(x, C){
   const need = {margin:'Enter the non-inferiority margin above to test non-inferiority.',
     'ratio-margin':'A margin on the ratio scale should be above 1 (e.g. 1.3). For a margin in percentage points, choose "Risk difference" as the scale.',
     effect:'Enter the reported effect and its 95% CI, or event counts, to compare with the margin.',
-    counts:'Enter events and randomised patients in each arm to calculate the risk difference.'}[E.need];
+    counts:'Enter events and randomised patients in each arm to calculate the risk difference.',
+    'rd-effect':'The reported effect is a risk difference, so express the margin as a risk difference (percentage points).'}[E.need];
   if (need) return `<div class="stack"><h2>Non-inferiority</h2><div class="helper"><span>${need}</span></div></div>`;
   const u = E.scale === 'ratio' ? '' : ' pts';
   const itt = E.rows[0], pp = E.rows[1];
@@ -890,25 +899,25 @@ function niChart(E){
 function ppSection(x, C){
   const pe = num(x.ppEst), pl = num(x.ppLo), ph = num(x.ppHi);
   if (!([pe,pl,ph].every(Number.isFinite) && pl < pe && pe < ph) || !C.eff) return '';
-  const meas = C.eff.measure;
-  const verdict = r => r.hi < 1 ? {k:'okay', t:'Favours ' + esc(x.arm1Label || 'intervention')}
-    : r.lo > 1 ? {k:'bad', t:'Favours ' + esc(x.arm2Label || 'control')} : {k:'warn', t:'Not significant'};
+  const meas = C.eff.measure, rd = !!C.eff.rd, nul = rd ? 0 : 1, tr = rd ? (v => v) : Math.log;
+  const verdict = r => r.hi < nul ? {k:'okay', t:'Favours ' + esc(x.arm1Label || 'intervention')}
+    : r.lo > nul ? {k:'bad', t:'Favours ' + esc(x.arm2Label || 'control')} : {k:'warn', t:'Not significant'};
   const rows = [
     {label:`Primary ${meas}`, est:C.eff.est, lo:C.eff.lo, hi:C.eff.hi},
     {label:'Per-protocol', est:pe, lo:pl, hi:ph}
   ];
   rows.forEach(r => r.v = verdict(r));
-  const bigger = Math.abs(Math.log(pe)) > Math.abs(Math.log(C.eff.est)) * 1.1 && Math.sign(Math.log(pe)) === Math.sign(Math.log(C.eff.est));
+  const bigger = Math.abs(tr(pe)) > Math.abs(tr(C.eff.est)) * 1.1 && Math.sign(tr(pe)) === Math.sign(tr(C.eff.est));
   const flipped = rows[0].v.t !== rows[1].v.t;
   const note = flipped
     ? `The two analyses reach different conclusions (${rows[0].v.t.toLowerCase()} vs ${rows[1].v.t.toLowerCase()}). Ask which one the paper leads with, and whether the protocol pre-specified it.`
     : bigger
-      ? `The per-protocol effect (${f2(pe)}) is larger than the primary one (${f2(C.eff.est)}). That is the usual direction: dropping non-adherent patients removes people whose prognosis often differs, so the per-protocol estimate flatters the treatment.`
+      ? `The per-protocol effect (${fmtEff(C.eff, pe)}) is larger than the primary one (${fmtEff(C.eff, C.eff.est)}). That is the usual direction: dropping non-adherent patients removes people whose prognosis often differs, so the per-protocol estimate flatters the treatment.`
       : `The two analyses agree, which is reassuring.`;
   return `<div class="stack"><h2>Primary versus per-protocol</h2>
     <div class="card stack">
       <div class="row">${rows.map(r => `<span class="flag ${r.v.k}">${esc(r.label)}: ${r.v.t}</span>`).join('')}</div>
-      <div class="chartbox">${niChart({scale:'ratio', nul:1, rows})}</div>
+      <div class="chartbox">${niChart({scale: rd ? 'rd' : 'ratio', nul, rows})}</div>
     </div>
     <p class="callout">${note}</p>
     <p class="small muted">In a superiority trial the intention-to-treat analysis is the conservative one, so the per-protocol result should support it, not carry the claim.</p>
