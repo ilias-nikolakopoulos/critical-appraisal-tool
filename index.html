@@ -495,7 +495,7 @@ const CHECKLIST = [
   ]},
   {sec:'What are the results?', items:[
     {id:'stats', q:'What is the statistical analysis of the primary outcome?', hint:'Which test or model (e.g. Cox regression, log-rank, logistic regression)? Pre-specified? Adjusted for stratification factors? Multiplicity handled?', helper:'stats'},
-    {id:'size', q:'How large was the treatment effect?', hint:'Give both the relative effect (HR, RR) and the absolute effect (risk difference, NNT).', helper:'size'},
+    {id:'size', q:'How large was the treatment effect?', hint:'Give both the relative effect (HR, RR) and the absolute effect (NNT).', helper:'size'},
     {id:'precision', q:'How precise was the estimate of the treatment effect?', hint:'Look at the 95% confidence interval. Does it exclude no effect? Does it include effects too small to matter?', helper:'precision'}
   ]},
   {sec:'Will the results help my patients?', items:[
@@ -529,8 +529,8 @@ function helperHTML(kind){
   if (kind === 'size'){
     if (!C.bin && !C.eff) return `<div class="helper">Enter event counts or the reported effect on ${go} to see it here.</div>`;
     const parts = [];
-    if (C.eff && C.eff.from === 'reported') parts.push(`Relative: <span class="mono">${esc(C.eff.measure)} ${f2(C.eff.est)}</span> (a ${Math.abs((1 - C.eff.est) * 100).toFixed(0)}% relative ${C.eff.est < 1 ? 'reduction' : 'increase'})`);
-    if (C.bin){ const nn = nntText(C.bin); parts.push(`Absolute: <span class="mono">${pct(C.bin.r2)} → ${pct(C.bin.r1)}</span>, a difference of <span class="mono">${(C.bin.arr * 100).toFixed(1)}</span> percentage points; ${nn.kind} <span class="mono">${nn.main}</span>${x.followup ? ' over ' + esc(x.followup.toLowerCase()) : ''}`); }
+    if (C.eff && C.eff.from === 'reported') parts.push(`<span class="mono">${esc(C.eff.measure)} ${f2(C.eff.est)}</span> (a ${Math.abs((1 - C.eff.est) * 100).toFixed(0)}% relative ${C.eff.est < 1 ? 'reduction' : 'increase'})`);
+    if (C.bin){ const nn = nntText(C.bin); parts.push(`${nn.kind} <span class="mono">${nn.main}</span>${x.followup ? ' over ' + esc(x.followup.toLowerCase()) : ''}`); }
     return `<div class="helper">${parts.map(p => `<span>${p}</span>`).join('')}<span><a data-go="results">Full calculations on Results &amp; precision</a></span></div>`;
   }
   if (kind === 'precision'){
@@ -541,7 +541,6 @@ function helperHTML(kind){
       parts.push(`95% CI <span class="mono">${f2(C.eff.lo)}–${f2(C.eff.hi)}</span>${C.eff.from === 'counts' ? ' (risk ratio from counts)' : ''}: ${crosses ? 'includes no effect' : 'excludes no effect'}.`);
     }
     if (x.design === 'ni'){ const E = niEval(x, C); if (E.rows) parts.push(`Against the non-inferiority margin (${fmtNI(E.m, E.scale)}${E.scale === 'ratio' ? '' : ' pts'}): <b>${E.rows[0].v.t.toLowerCase()}</b>.`); }
-    if (C.bin) parts.push(`Risk difference 95% CI <span class="mono">${(C.bin.arrLo * 100).toFixed(1)} to ${(C.bin.arrHi * 100).toFixed(1)}</span> points.`);
     return `<div class="helper">${parts.map(p => `<span>${p}</span>`).join('')}</div>`;
   }
   return '';
