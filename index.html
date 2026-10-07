@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Critical appraisal</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Critical appraisal</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#FEFAF0"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Appraisal"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><link rel="icon" type="image/png" href="icons/favicon-64.png"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap">
 <style>
@@ -189,7 +189,12 @@ footer.foot{margin-top:40px;color:var(--faint);font-size:.78rem;text-align:cente
       <select id="trial-pick"></select>
       <button class="btn" id="trial-new">New trial</button>
     </div>
-    <button class="btn ghost" id="trial-del">Delete this trial</button>
+    <div class="row">
+      <button class="btn ghost" id="trial-export" title="Save this appraisal as a file to back up or share">Export</button>
+      <button class="btn ghost" id="trial-import" title="Add an appraisal from an exported file">Import</button>
+      <input type="file" id="trial-file" accept=".json,application/json" hidden>
+      <button class="btn ghost" id="trial-del">Delete this trial</button>
+    </div>
   </div>
   <header class="trial" id="hdr"></header>
   <div class="bar">
@@ -422,6 +427,58 @@ $('#trial-del').addEventListener('click', () => {
   if (!S.order.length){ const id = newId(); S.trials[id] = blankTrial(); S.order = [id]; S.tab = 'pico'; }
   S.current = S.order[0]; save(); renderAll();
 });
+
+/* ---------- export / import: one appraisal per file, added as a new trial on import ---------- */
+const FILE_TAG = 'critical-appraisal';
+$('#trial-export').addEventListener('click', async () => {
+  const t = T();
+  const body = {app: FILE_TAG, format: 1, exported: new Date().toISOString(),
+    trials: [{data: t.data, cl: t.cl, notes: t.notes, assump: t.assump}]};
+  const slug = (t.data.acronym || 'trial').trim().replace(/[^\w-]+/g, '-').replace(/^-+|-+$/g, '') || 'trial';
+  const name = slug + '.appraisal.json';
+  const blob = new Blob([JSON.stringify(body, null, 2)], {type: 'application/json'});
+  // On phones, the share sheet (Mail, Messages, AirDrop, Files) is easier than a download.
+  if (matchMedia('(pointer:coarse)').matches && navigator.canShare){
+    const file = new File([blob], name, {type: 'application/json'});
+    if (navigator.canShare({files: [file]})){
+      try { await navigator.share({files: [file], title: trialName(t)}); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+$('#trial-import').addEventListener('click', () => $('#trial-file').click());
+$('#trial-file').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  let body;
+  try { body = JSON.parse(await f.text()); } catch (err) { alert('This file could not be read. Choose a file exported from this tool.'); return; }
+  if (!body || body.app !== FILE_TAG || !Array.isArray(body.trials) || !body.trials.length){ alert('This file is not an appraisal exported from this tool.'); return; }
+  const ids = body.trials.map(cleanTrial).filter(Boolean).map(t => { const id = newId(); S.trials[id] = t; S.order.push(id); return id; });
+  if (!ids.length){ alert('No appraisal was found in this file.'); return; }
+  S.current = ids[0]; save(); renderAll();
+});
+// Keep only known fields with plain values, so an imported file cannot inject anything else.
+function cleanTrial(src){
+  if (!src || typeof src !== 'object' || !src.data || typeof src.data !== 'object') return null;
+  const str = v => typeof v === 'string' ? v : typeof v === 'number' && Number.isFinite(v) ? String(v) : undefined;
+  const t = blankTrial();
+  const keys = ['acronym', 'design', ...PICO.map(p => p.k), ...DATA_FIELDS.map(f => f.k)];
+  keys.forEach(k => { const v = str(src.data[k]); if (v !== undefined) t.data[k] = v; });
+  if (t.data.design && !['sup', 'ni'].includes(t.data.design)) delete t.data.design;
+  CL_ITEMS.forEach(it => {
+    const v = src.cl && src.cl[it.id]; if (!v || typeof v !== 'object') return;
+    const r = {}; if (['yes', 'no', 'unclear'].includes(v.a)) r.a = v.a;
+    const note = str(v.note); if (note) r.note = note;
+    if (Object.keys(r).length) t.cl[it.id] = r;
+  });
+  const bl = str(src.notes && src.notes.bl); if (bl) t.notes.bl = bl;
+  const truth = str(src.assump && src.assump.truth); if (truth !== undefined && Number.isFinite(+truth)) t.assump.truth = truth;
+  return t;
+}
 
 /* ---------- header ---------- */
 function renderHeader(){
@@ -945,6 +1002,10 @@ function renderDiscuss(sec){
 }
 
 renderAll();
+
+// Installable app: offline support on the published site only.
+if ('serviceWorker' in navigator && (/\.github\.io$/.test(location.hostname) || location.hostname === 'localhost'))
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
 </script>
 
