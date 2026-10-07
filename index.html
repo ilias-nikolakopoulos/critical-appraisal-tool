@@ -180,6 +180,15 @@ footer.foot{margin-top:40px;color:var(--faint);font-size:.78rem;text-align:cente
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .fields .f{align-content:end}
 .flag.bad{background:var(--high-bg);color:var(--high)}
+
+/* Phones */
+/* iPhone Safari zooms into any field with text under 16px when it is tapped. */
+@media (pointer:coarse){input,select,textarea{font-size:16px}}
+/* All four tabs visible as a 2 × 2 grid instead of a row that scrolls out of view. */
+@media (max-width:520px){
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%;overflow:visible}
+  .tabs button{padding:7px 8px}
+}
 </style>
 
 <div class="wrap">
